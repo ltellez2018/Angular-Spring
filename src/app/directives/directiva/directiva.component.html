@@ -1,0 +1,13 @@
+<button [ngClass]="{'btn-primary': hideCourse , 'btn-danger': !hideCourse  }" class="btn my-3" (click)="hideCourse = !hideCourse">
+    {{ hideCourse === true ? 'Mostrar' : 'Ocultar'}}
+</button>
+<div class="card">
+    <div class="card-header">
+        Listado de cursos
+    </div>
+    <ul class="list-group" *ngIf="!hideCourse">
+        <li class="list-group-item" *ngFor="let curse of courseList">
+            {{curse}}
+        </li>      
+    </ul>
+  </div>
