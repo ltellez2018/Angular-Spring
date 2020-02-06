@@ -4,8 +4,19 @@
   </div>
   <div class="card-body">
     <h5 class="card-title">Listado de clientes</h5>
+    <div class="my-2 text-left">
+      <button [routerLink] ="['/cliente/form']" class="btn btn-outline-primary btn.rounded"> Nuevo Cliente</button>
+    </div>
 
-    <div>
+    <div *ngIf="!clients$">
+      <div class="jumbotron jumbotron-fluid">
+        <div class="container">
+          <h6 class="display-4">Sin clientes registrados!</h6>
+          <p class="lead">Si es necesario favor de registrar nuevos clientes</p>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="clients$">
       <table class="table table-striped">
         <thead class="thead-dark">
           <tr>
@@ -14,6 +25,8 @@
             <th scope="col">Apellido</th>
             <th scope="col">Email</th>
             <th scope="col">Creado</th>
+            <th scope="col">Editar</th>
+            <th scope="col">Eliminar</th>
           </tr>
         </thead>
         <tbody>
@@ -23,6 +36,8 @@
             <td>{{client.apellido}}</td>
             <td>{{client.email}}</td>
             <td>{{client.createAt}}</td>
+            <td><a [routerLink]="['/cliente/form',client.id]" class="badge badge-primary">Editar</a></td>
+            <td><a (click)="deleteCliente(client)" class="badge badge-danger text-white" style="cursor: pointer;">Eliminar</a></td>
           </tr>
         </tbody>
       </table>

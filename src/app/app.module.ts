@@ -7,6 +7,9 @@ import { FooterComponent } from './components/footer/footer.component';
 import { DirectivaComponent } from './directives/directiva/directiva.component';
 import { ClientsComponent } from './pages/clients/clients.component';
 import { AppRoutingModule } from './app-routing.module';
+import { HttpClientModule } from "@angular/common/http";
+import { ClientsFormComponent } from './pages/clients/form/clients-form.component';
+import { FormsModule, ReactiveFormsModule  } from "@angular/forms";
 
 @NgModule({
   declarations: [
@@ -14,11 +17,15 @@ import { AppRoutingModule } from './app-routing.module';
     NavbarComponent,
     FooterComponent,
     DirectivaComponent,
-    ClientsComponent
+    ClientsComponent,
+    ClientsFormComponent
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    HttpClientModule,
+    FormsModule,
+    ReactiveFormsModule 
   ],
   providers: [],
   bootstrap: [AppComponent]
