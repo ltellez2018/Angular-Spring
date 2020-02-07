@@ -4,28 +4,60 @@
 	</div>
 	<div class="card-body text-muted">
 		<form [formGroup]="clientForm" (ngSubmit)="onSubmit()">
+
+			
 			<div class="form-group row">
 				<label for="inputName" class="col-sm-2 col-form-label">Nombre</label>
 				<div class="col-sm-10">
-					<input type="text" class="form-control" id="inputName" required autocomplete="off" formControlName="nombre">
+					<input type="text" class="form-control" id="inputName" required autocomplete="off" formControlName="nombre"
+					[ngClass]="{'is-invalid':clientForm.get('nombre').invalid, 'is-valid':clientForm.get('nombre').valid}">					
+					<div class="invalid-feedback">
+						<div *ngIf="clientForm.get('nombre').errors?.required">
+							El campo es obligatorio
+						</div>
+						<div *ngIf="clientForm.get('nombre').errors?.minlength">
+							La longitud mínima es de
+							{{clientForm.get('nombre').errors.minlength.requiredLength}} carácteres
+						</div>
+					</div>
 				</div>
 			</div>
 
 			<div class="form-group row">
 				<label for="inputApellido" class="col-sm-2 col-form-label">Apellio</label>
 				<div class="col-sm-10">
-					<input type="text" class="form-control" id="inputApellido" required autocomplete="off" formControlName="apellido">
+					<input type="text" class="form-control" id="inputApellido" required autocomplete="off" formControlName="apellido"
+					[ngClass]="{'is-invalid':clientForm.get('apellido').invalid, 'is-valid':clientForm.get('apellido').valid}">	
+					<div class="invalid-feedback">
+						<div *ngIf="clientForm.get('apellido').errors?.required">
+							El campo es obligatorio
+						</div>
+						<div *ngIf="clientForm.get('apellido').errors?.minlength">
+							La longitud mínima es de
+							{{clientForm.get('apellido').errors.minlength.requiredLength}} carácteres
+						</div>
+					</div>
 				</div>
 			</div>
 
 			<div class="form-group row">
 				<label for="inputEmail" class="col-sm-2 col-form-label">Email</label>
 				<div class="col-sm-10">
-					<input type="email" class="form-control" id="inputEmail" required autocomplete="off" formControlName="email">
+					<input type="email" class="form-control" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$" id="inputEmail" required autocomplete="off" formControlName="email"
+					[ngClass]="{'is-invalid':clientForm.get('email').invalid, 'is-valid':clientForm.get('email').valid}">	
+					<div class="invalid-feedback">
+						<div *ngIf="clientForm.get('email').errors?.required">
+							El campo es obligatorio
+						</div>
+						<div *ngIf="clientForm.get('email').errors?.pattern">
+							Introduzca un email valido
+						</div>
+					
+					</div>
 				</div>
 			</div>
 
-			<button type="submit"  [disabled]="clientForm.invalid" class="btn btn-block btn-primary">
+			<button type="submit"  [disabled]="clientForm.invalid" class="btn btn-block btn-primary"> 
 				{{ cliente.id !== 0 ? 'Editar' : 'Crear'}} 
 			</button>
 

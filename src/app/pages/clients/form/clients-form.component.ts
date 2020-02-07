@@ -2,11 +2,10 @@ import { Component, OnInit, AfterContentInit } from '@angular/core';
 import { FormGroup, Validators, FormControl } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 
-//* RXJS
-import { Observable } from 'rxjs';
 //* CUSTOM
 import { ClientService } from '../../../services/client.service.service';
 import { Client } from 'src/app/interfaces/client-interface';
+
 //* SWEATALERT 2
 import Swal from 'sweetalert2'
 
@@ -44,8 +43,8 @@ export class ClientsFormComponent implements OnInit, AfterContentInit {
 
   private initForm() {
     this.clientForm = new FormGroup({
-      nombre: new FormControl(this.cliente.nombre, { validators: [Validators.required] }),
-      apellido: new FormControl(this.cliente.apellido, { validators: [Validators.required] }),
+      nombre: new FormControl(this.cliente.nombre, [ Validators.required, Validators.minLength(5) ]),
+      apellido: new FormControl(this.cliente.apellido, [ Validators.required, Validators.minLength(5) ]),
       email: new FormControl(this.cliente.email, { validators: [Validators.required, Validators.email] })
     });
   }
@@ -90,18 +89,21 @@ export class ClientsFormComponent implements OnInit, AfterContentInit {
                                         email: this.clientForm.value.email,
                                         id: this.cliente.id,
                                         createAt: this.cliente.createAt
-                                      }).subscribe(cliente => this.sweatAlert('Cliente actualizado con exito',cliente));                                      
+                                      }).subscribe((cliente: Client) => this.sweatAlert('Cliente actualizado con exito',cliente));                                      
   }
 
   // **************************************************** //
   // ***            'Crear CLIENTE'                   *** //
   // **************************************************** //
   private saveCliente() {
-            this.clientService.saveClient({
+
+            console.log('Form: ' , this.clientForm);
+            
+          /*   this.clientService.saveClient({
                                             nombre: this.clientForm.value.nombre,
                                             apellido: this.clientForm.value.apellido,
                                             email: this.clientForm.value.email
-            }).subscribe(cliente => this.sweatAlert('Cliente creado con exito',cliente));
+            }).subscribe((cliente: Client) => this.sweatAlert('Cliente creado con exito',cliente)); */
   }
 
 
