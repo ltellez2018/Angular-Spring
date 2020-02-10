@@ -8,8 +8,14 @@ import { DirectivaComponent } from './directives/directiva/directiva.component';
 import { ClientsComponent } from './pages/clients/clients.component';
 import { AppRoutingModule } from './app-routing.module';
 import { HttpClientModule } from "@angular/common/http";
-import { ClientsFormComponent } from './pages/clients/form/clients-form.component';
 import { FormsModule, ReactiveFormsModule  } from "@angular/forms";
+import  localeES  from "@angular/common/locales/es-MX";
+import { registerLocaleData } from "@angular/common";
+registerLocaleData(localeES,'es-MX');
+
+// * COMPONENTS
+import { PaginatorComponent } from './components/paginator/paginator.component';
+import { ClientsFormComponent } from './pages/clients/form/clients-form.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +24,8 @@ import { FormsModule, ReactiveFormsModule  } from "@angular/forms";
     FooterComponent,
     DirectivaComponent,
     ClientsComponent,
-    ClientsFormComponent
+    ClientsFormComponent,
+    PaginatorComponent
   ],
   imports: [
     BrowserModule,

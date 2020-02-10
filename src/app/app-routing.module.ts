@@ -10,6 +10,7 @@ const routes: Routes = [
   {path: 'diretivas', component: DirectivaComponent},
   {path: 'cliente/form', component: ClientsFormComponent},
   {path: 'cliente/form/:id', component: ClientsFormComponent},
+  {path: 'clientes/page/:page', component: ClientsComponent},
   {path: '**', pathMatch: 'full' , component: ClientsComponent}
 ];
 

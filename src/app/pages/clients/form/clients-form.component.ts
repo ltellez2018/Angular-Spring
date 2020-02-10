@@ -18,6 +18,9 @@ export class ClientsFormComponent implements OnInit, AfterContentInit {
   cliente: Client;
   
   clientForm: FormGroup;
+
+  errores:string [];
+
   constructor(private clientService: ClientService, private router: Router, private activatedRoute: ActivatedRoute) {
 
   }
@@ -42,11 +45,17 @@ export class ClientsFormComponent implements OnInit, AfterContentInit {
   // **************************************************** //
 
   private initForm() {
-    this.clientForm = new FormGroup({
+      this.clientForm = new FormGroup({
       nombre: new FormControl(this.cliente.nombre, [ Validators.required, Validators.minLength(5) ]),
       apellido: new FormControl(this.cliente.apellido, [ Validators.required, Validators.minLength(5) ]),
       email: new FormControl(this.cliente.email, { validators: [Validators.required, Validators.email] })
-    });
+    }); 
+
+/*     this.clientForm = new FormGroup({
+      nombre: new FormControl(this.cliente.nombre),
+      apellido: new FormControl(this.cliente.apellido),
+      email: new FormControl(this.cliente.email,)
+    }); */
   }
 
   // **************************************************** //
@@ -89,21 +98,28 @@ export class ClientsFormComponent implements OnInit, AfterContentInit {
                                         email: this.clientForm.value.email,
                                         id: this.cliente.id,
                                         createAt: this.cliente.createAt
-                                      }).subscribe((cliente: Client) => this.sweatAlert('Cliente actualizado con exito',cliente));                                      
+                                      }).subscribe((cliente: Client) => this.sweatAlert('Cliente actualizado con exito',cliente),
+                                                                  err=> {
+                                                                    this.errores = err.error.errors as string [];
+                                                                    console.error('Codigo del error desde el back ' + err.status);
+                                                                    console.error(err.error.errors);                                              
+                                                                  }); 
   }
 
   // **************************************************** //
   // ***            'Crear CLIENTE'                   *** //
   // **************************************************** //
-  private saveCliente() {
-
-            console.log('Form: ' , this.clientForm);
-            
-          /*   this.clientService.saveClient({
+  private saveCliente() {            
+            this.clientService.saveClient({
                                             nombre: this.clientForm.value.nombre,
                                             apellido: this.clientForm.value.apellido,
                                             email: this.clientForm.value.email
-            }).subscribe((cliente: Client) => this.sweatAlert('Cliente creado con exito',cliente)); */
+            }).subscribe((cliente: Client) => this.sweatAlert('Cliente creado con exito',cliente),
+                                        err=> {
+                                                this.errores = err.error.errors as string [];
+                                                console.error('Codigo del error desde el back ' + err.status);
+                                                console.error(err.error.errors);                                              
+                                              }); 
   }
 
 

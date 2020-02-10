@@ -2,9 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { Client } from 'src/app/interfaces/client-interface';
 import { ClientService } from '../../services/client.service.service';
 import { Observable, pipe, of } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { map, tap, pluck } from 'rxjs/operators';
 //* SWEATALERT 2
 import Swal from 'sweetalert2'
+import { ActivatedRoute } from '@angular/router';
+import { formatDate } from '@angular/common';
 
 
 @Component({
@@ -13,14 +15,45 @@ import Swal from 'sweetalert2'
 })
 export class ClientsComponent implements OnInit {
 
-  
+  paginador: {};
   clients$: Observable< Client[] >;
 
-  constructor(private clientService : ClientService) { }
+  constructor(private clientService : ClientService, private activatedRoute: ActivatedRoute) { }
 
   ngOnInit() {
-       this.clients$ = this.clientService.getClients();      
+        //this.clients$ = this.clientService.getClients();      
+    this.activatedRoute.paramMap.subscribe(params => {
+        let page:number = +params.get('page'); // Operador + convierte la vairable a number
+        console.log('Page: ', page);
+        
+         if(!page) {
+           page = 0;
+         }
+         this.clientService.getClientsByPage(page).pipe(tap(console.log)).subscribe(
+            response =>  { 
+                this.clients$ = of(response.content); 
+                 this.paginador =  {totalPages: response.totalPages , number: response.number, last: response.last, first: response.first}
+                }
+            
+         );
+      
+      }); 
+     
   }
+/* 
+  ngOnInit() {
+    //this.clients$ = this.clientService.getClients();      
+    this.activatedRoute.paramMap.subscribe(params => {
+     let page:number = +params.get('page'); // Operador + convierte la vairable a number
+     console.log('Page: ', page);
+     
+      if(!page) {
+        page = 0;
+      }
+      this.clients$ = this.clientService.getClientsByPage(page);      
+   });
+  
+} */
 
 
   deleteCliente(cliente: Client){
