@@ -1,12 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { Client } from 'src/app/interfaces/client-interface';
-import { ClientService } from '../../services/client.service.service';
+
+import { ClientService } from '../../services/client.service';
 import { Observable, pipe, of } from 'rxjs';
 import { map, tap, pluck } from 'rxjs/operators';
 //* SWEATALERT 2
 import Swal from 'sweetalert2'
 import { ActivatedRoute } from '@angular/router';
 import { formatDate } from '@angular/common';
+import { ModalService } from '../../services/modal.service';
+import { Cliente } from '../../data/cliente-data';
+
 
 
 @Component({
@@ -14,49 +17,47 @@ import { formatDate } from '@angular/common';
   templateUrl: './clients.component.html'
 })
 export class ClientsComponent implements OnInit {
-
+  clienteSeleccionado: Cliente;
   paginador: {};
-  clients$: Observable< Client[] >;
+  clientes: Cliente[];
 
-  constructor(private clientService : ClientService, private activatedRoute: ActivatedRoute) { }
+  constructor(private clientService : ClientService,
+              private modalService: ModalService,
+              private activatedRoute: ActivatedRoute) { }
 
-  ngOnInit() {
-        //this.clients$ = this.clientService.getClients();      
+  ngOnInit() {   
     this.activatedRoute.paramMap.subscribe(params => {
         let page:number = +params.get('page'); // Operador + convierte la vairable a number
-        console.log('Page: ', page);
-        
-         if(!page) {
+        if(!page) {
            page = 0;
          }
-         this.clientService.getClientsByPage(page).pipe(tap(console.log)).subscribe(
-            response =>  { 
-                this.clients$ = of(response.content); 
-                 this.paginador =  {totalPages: response.totalPages , number: response.number, last: response.last, first: response.first}
+         this.clientService.getClientsByPage(page)
+           .pipe(
+               tap(response => console.log('tap',response))
+                ).subscribe((response: any) =>  { 
+                 this.clientes = response.content; 
+                 this.paginador =  {totalPages: response.totalPages , number: response.number, last: response.last, first: response.first};
                 }
             
          );
       
       }); 
+
+     
+      
+      this.modalService._notificarUpload.subscribe(cliente => { 
+        this.clientes = this.clientes.map(clienteOriginal => {
+          if(cliente.id === clienteOriginal.id) {
+            clienteOriginal.foto = cliente.foto;
+          }
+          return clienteOriginal;
+        })
+      });
      
   }
-/* 
-  ngOnInit() {
-    //this.clients$ = this.clientService.getClients();      
-    this.activatedRoute.paramMap.subscribe(params => {
-     let page:number = +params.get('page'); // Operador + convierte la vairable a number
-     console.log('Page: ', page);
-     
-      if(!page) {
-        page = 0;
-      }
-      this.clients$ = this.clientService.getClientsByPage(page);      
-   });
-  
-} */
 
 
-  deleteCliente(cliente: Client){
+  deleteCliente(cliente: Cliente){
 
     
   
@@ -73,11 +74,7 @@ export class ClientsComponent implements OnInit {
     }).then((result) => {
       if (result.value) {
         this.clientService.deleteCliente(cliente.id).subscribe(()=> {
-          this.clients$.pipe(
-            tap(console.log),
-            map(clientes => clientes.filter(cli => cli.id !== cliente.id)),
-            tap(console.log)
-        ).subscribe(clientes => this.clients$ = of(clientes));
+                      this.clientes = this.clientes.filter(cli => cli.id !== cliente.id)
         });  
         Swal.fire(
           'Eliminado!',
@@ -88,4 +85,11 @@ export class ClientsComponent implements OnInit {
     })  
   }
 
+
+  abrirModal(cliente: Cliente) {
+    console.log("Cliente para modal: ", cliente);
+    
+    this.clienteSeleccionado = cliente;
+    this.modalService.abriModal();
+  }
  }

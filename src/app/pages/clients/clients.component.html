@@ -1,3 +1,4 @@
+<app-detalle *ngIf="clienteSeleccionado" [cliente]="clienteSeleccionado"></app-detalle>
 <div class="card">
   <div class="card-header">
     Clientes
@@ -8,7 +9,7 @@
       <button [routerLink] ="['/cliente/form']" class="btn btn-outline-primary btn.rounded"> Nuevo Cliente</button>
     </div>
 
-    <div *ngIf="!clients$">
+    <div *ngIf="!clientes">
       <div class="jumbotron jumbotron-fluid">
         <div class="container">
           <h6 class="display-4">Sin clientes registrados!</h6>
@@ -16,11 +17,11 @@
         </div>
       </div>
     </div>
-    <div *ngIf="clients$">
+    <div *ngIf="clientes">
       <table class="table table-striped">
         <thead class="thead-dark">
           <tr>
-            <th scope="col">Id</th>
+            <th scope="col">Perfil</th>
             <th scope="col">Nombre</th>
             <th scope="col">Apellido</th>
             <th scope="col">Email</th>
@@ -30,13 +31,16 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let client of (clients$ | async)">
-            <td>{{client.id}}</td>
+          <tr *ngFor="let client of clientes">
+            <td>
+              <img  (click)="abrirModal(client)" style="width: 64px; cursor: pointer;" class="img-thumbnail rounded"  *ngIf="client.foto"  src="http://localhost:8080/api/uploads/img/{{client.foto}}" alt="Foto de Perfil">              
+              <img  (click)="abrirModal(client)" style="width: 64px; cursor: pointer;" class="img-thumbnail rounded"  *ngIf="!client.foto"  src="http://localhost:8080/images/not-user.png" alt="Sin Foto">              
+            </td>  
             <td>{{client.nombre}}</td>
             <td>{{client.apellido}}</td>
             <td>{{client.email}}</td>
             <td>{{client.createAt}}</td>
-            <td><a [routerLink]="['/cliente/form',client.id]" class="badge badge-primary">Editar</a></td>
+            <td><a [routerLink]="['/cliente/form',client.id]" class="badge badge-primary"  style="cursor: pointer;">Editar</a></td>
             <td><a (click)="deleteCliente(client)" class="badge badge-danger text-white" style="cursor: pointer;">Eliminar</a></td>
           </tr>
         </tbody>
@@ -46,3 +50,4 @@
     </div>
   </div>
 </div>
+

@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from "@angular/common/http";
-import { Client } from 'src/app/interfaces/client-interface';
+import { HttpClient, HttpHeaders, HttpRequest, HttpEvent } from "@angular/common/http";
+
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap, pluck, map } from 'rxjs/operators';
 //* SWEATALERT 2
 import Swal from 'sweetalert2'
 import { Router } from '@angular/router';
 import { DatePipe, formatDate } from "@angular/common";
+import { Region } from '../data/region-data';
+import { Cliente } from '../data/cliente-data';
 
 //*
 
@@ -23,12 +25,16 @@ export class ClientService{
    
    }
 
+   getRegiones(): Observable<Region[]>{
+      return this.http.get<Region[]>(`${this.urlEndPoint}/clientes/regiones`);
+   }
+
 
   getClients() {  
     /* return this.http.get<Client[]>(`${this.urlEndPoint}/clientes`); */
-    return this.http.get<Client[]>(`${this.urlEndPoint}/clientes`)
+    return this.http.get<Cliente[]>(`${this.urlEndPoint}/clientes`)
       .pipe(
-          map( (clientes :Client[]) =>  clientes.map(cliente => ( { ...cliente,
+          map( (clientes :Cliente[]) =>  clientes.map(cliente => ( { ...cliente,
                                                                         //createAt: new DatePipe('es-MX').transform(cliente.createAt,'EEEE dd, MMMM yyyy'),
                                                                         createAt: formatDate(cliente.createAt,'dd-MM-yyyy','en_US'),
                                                                         nombre: cliente.nombre.toUpperCase()} )))
@@ -60,8 +66,8 @@ export class ClientService{
   } 
   */
 
-  saveClient(cliente: Partial<Client>):Observable<Client> {
-    return this.http.post<Client>(`${this.urlEndPoint}/clientes`, cliente, {headers: this.httpHeader})
+  saveClient(cliente: Partial<Cliente>):Observable<Cliente> {
+    return this.http.post<Cliente>(`${this.urlEndPoint}/clientes`, cliente, {headers: this.httpHeader})
       .pipe(
         tap(console.log),
         catchError( err => {
@@ -72,29 +78,22 @@ export class ClientService{
           Swal.fire( { icon: 'error',title: err.error.mensaje, text: err.error.error});
           return throwError(err);
         }),
-        pluck('cliente')
       );           
   }
 
-  getCliente(id: string){   
-    return this.http.get<Client>(`${this.urlEndPoint}/clientes/${id}`)
+  getCliente(id: number){   
+    return this.http.get<Cliente>(`${this.urlEndPoint}/clientes/${id}`)
       .pipe(
         catchError(err => {
-          this.router.navigate(['/clientes']);
-            console.log(err.error.mensaje);
-            Swal.fire({
-            icon: 'error',
-            title: 'Error al editar',
-            text: err.error.mensaje,
-          });
-
-          return throwError(err);
+            this.router.navigate(['/clientes']);
+            Swal.fire({ icon: 'error', title: 'Error al editar', text: err.error.mensaje});
+            return throwError(err);
         })
       )
   }
 
-  updateCliente(cliente: Partial<Client>) {
-    return this.http.put<Client>(`${this.urlEndPoint}/clientes/${cliente.id}`,cliente,{headers: this.httpHeader})
+  updateCliente(cliente: Partial<Cliente>) {
+    return this.http.put<Cliente>(`${this.urlEndPoint}/clientes/${cliente.id}`,cliente,{headers: this.httpHeader})
     .pipe(
       catchError( err => {
         if(err.status === 400){
@@ -119,5 +118,29 @@ export class ClientService{
       });
       return throwError(err);
     }));           
+  }
+
+  subirFoto(archivo: File, id):Observable<HttpEvent<any>>{
+    let formData = new FormData()
+    formData.append("archivo",archivo);
+    formData.append("id",id);
+    
+    const req = new HttpRequest('POST',`${this.urlEndPoint}/clientes/upload`,formData,{reportProgress: true});
+
+  /*   return this.http.request(req)
+        .pipe(
+          map((response:any) => response.cliente as Client),
+          catchError( err => {
+            console.log(err.error.mensaje);
+            Swal.fire({
+              icon: 'error',
+              title: err.error.mensaje,
+              text: err.error.error,
+            });
+            return throwError(err);
+          })
+        ); */
+
+        return this.http.request(req);
   }
 }

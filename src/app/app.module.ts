@@ -16,6 +16,8 @@ registerLocaleData(localeES,'es-MX');
 // * COMPONENTS
 import { PaginatorComponent } from './components/paginator/paginator.component';
 import { ClientsFormComponent } from './pages/clients/form/clients-form.component';
+import { DetalleComponent } from './pages/clients/detalle/detalle.component';
+
 
 @NgModule({
   declarations: [
@@ -25,7 +27,8 @@ import { ClientsFormComponent } from './pages/clients/form/clients-form.componen
     DirectivaComponent,
     ClientsComponent,
     ClientsFormComponent,
-    PaginatorComponent
+    PaginatorComponent,
+    DetalleComponent
   ],
   imports: [
     BrowserModule,

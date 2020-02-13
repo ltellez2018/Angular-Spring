@@ -1,138 +1,80 @@
-import { Component, OnInit, AfterContentInit } from '@angular/core';
-import { FormGroup, Validators, FormControl } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+
 import { Router, ActivatedRoute } from '@angular/router';
 
-//* CUSTOM
-import { ClientService } from '../../../services/client.service.service';
-import { Client } from 'src/app/interfaces/client-interface';
 
 //* SWEATALERT 2
 import Swal from 'sweetalert2'
+
+
+import { Cliente } from '../../../data/cliente-data';
+import { Region } from '../../../data/region-data';
+import { ClientService } from '../../../services/client.service';
 
 @Component({
   selector: 'app-clients-form',
   templateUrl: './clients-form.component.html'
 })
-export class ClientsFormComponent implements OnInit, AfterContentInit {
+export class ClientsFormComponent implements OnInit {
 
-  cliente: Client;
-  
-  clientForm: FormGroup;
+  cliente: Cliente = new Cliente();
+  regiones: Region[];
+  titulo: string = "Crear Cliente";
 
-  errores:string [];
+  errores: string[];
 
-  constructor(private clientService: ClientService, private router: Router, private activatedRoute: ActivatedRoute) {
-
-  }
+  constructor(private clienteService: ClientService,
+    private router: Router,
+    private activatedRoute: ActivatedRoute) { }
 
   ngOnInit() {
-    this.cargarCliente();
-  }
-
-  ngAfterContentInit() {
-    this.cliente = {
-      id: 0,
-      nombre: '',
-      apellido: '',
-      email: '',
-      createAt: ''
-    }
-    this.initForm();
-  }
-
-  // **************************************************** //
-  // ***            'INIT FORM'                       *** //
-  // **************************************************** //
-
-  private initForm() {
-      this.clientForm = new FormGroup({
-      nombre: new FormControl(this.cliente.nombre, [ Validators.required, Validators.minLength(5) ]),
-      apellido: new FormControl(this.cliente.apellido, [ Validators.required, Validators.minLength(5) ]),
-      email: new FormControl(this.cliente.email, { validators: [Validators.required, Validators.email] })
-    }); 
-
-/*     this.clientForm = new FormGroup({
-      nombre: new FormControl(this.cliente.nombre),
-      apellido: new FormControl(this.cliente.apellido),
-      email: new FormControl(this.cliente.email,)
-    }); */
-  }
-
-  // **************************************************** //
-  // ***            'GET CLIENTE'                     *** //
-  // **************************************************** //
-
-  private cargarCliente() {
-    this.activatedRoute.params.subscribe(params => {
-      let id = params['id'];
+    this.activatedRoute.paramMap.subscribe(params => {
+      let id = +params.get('id');
       if (id) {
-        this.clientService.getCliente(id).subscribe(cliente => {
-          this.cliente = cliente;
-          this.initForm();
-        });
+        this.clienteService.getCliente(id).subscribe((cliente) => this.cliente = cliente);
       }
     });
 
+    this.clienteService.getRegiones().subscribe(regiones => this.regiones = regiones);
   }
 
-  // **************************************************** //
-  // ***         'SUBMIT VALUES FORM'                 *** //
-  // **************************************************** //
+  create(): void {
+    console.log(this.cliente);
+    this.clienteService.saveClient(this.cliente)
+      .subscribe(
+        cliente => {
+          this.router.navigate(['/clientes']);
+          Swal.fire('Nuevo cliente', `El cliente ${cliente.nombre} ha sido creado con éxito`, 'success');
+        },
+        err => {
+          this.errores = err.error.errors as string[];
+          console.error('Código del error desde el backend: ' + err.status);
+          console.error(err.error.errors);
+        }
+      );
+  }
 
-  onSubmit() {
-    if(this.cliente.id !==0 ){
-      this.updateCliente();
-    }else{
-      this.saveCliente();
+  update(): void {
+    console.log(this.cliente);
+    this.clienteService.saveClient(this.cliente)
+      .subscribe(
+        (json:any) => {
+          this.router.navigate(['/clientes']);
+          Swal.fire('Cliente Actualizado', `${json.mensaje}: ${json.cliente.nombre}`, 'success');
+        },
+        err => {
+          this.errores = err.error.errors as string[];
+          console.error('Código del error desde el backend: ' + err.status);
+          console.error(err.error.errors);
+        }
+      )
+  }
+
+  compararRegion(o1: Region, o2: Region): boolean {
+    if (o1 === undefined && o2 === undefined) {
+      return true;
     }
-    this.initForm();
+    return o1 === null || o2 === null || o1 === undefined || o2 === undefined ? false : o1.id === o2.id;
   }
 
-  // **************************************************** //
-  // ***            'Update CLIENTE'                  *** //
-  // **************************************************** //
-  private updateCliente() {
-    this.clientService.updateCliente({
-                                        nombre: this.clientForm.value.nombre,
-                                        apellido: this.clientForm.value.apellido,
-                                        email: this.clientForm.value.email,
-                                        id: this.cliente.id,
-                                        createAt: this.cliente.createAt
-                                      }).subscribe((cliente: Client) => this.sweatAlert('Cliente actualizado con exito',cliente),
-                                                                  err=> {
-                                                                    this.errores = err.error.errors as string [];
-                                                                    console.error('Codigo del error desde el back ' + err.status);
-                                                                    console.error(err.error.errors);                                              
-                                                                  }); 
-  }
-
-  // **************************************************** //
-  // ***            'Crear CLIENTE'                   *** //
-  // **************************************************** //
-  private saveCliente() {            
-            this.clientService.saveClient({
-                                            nombre: this.clientForm.value.nombre,
-                                            apellido: this.clientForm.value.apellido,
-                                            email: this.clientForm.value.email
-            }).subscribe((cliente: Client) => this.sweatAlert('Cliente creado con exito',cliente),
-                                        err=> {
-                                                this.errores = err.error.errors as string [];
-                                                console.error('Codigo del error desde el back ' + err.status);
-                                                console.error(err.error.errors);                                              
-                                              }); 
-  }
-
-
-  //*HELPERS
-  private sweatAlert = (mensaje: String, cliente: Client) =>{
-      Swal.fire({
-        icon: 'success',
-        title: mensaje,
-        text: `${cliente.nombre}  ${cliente.apellido}`,
-        showConfirmButton: false,
-        timer: 3000
-      });
-      this.router.navigate(['/clientes'])
-  };
-  
 }
