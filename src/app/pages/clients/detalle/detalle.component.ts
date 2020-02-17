@@ -6,6 +6,7 @@ import { HttpEventType } from '@angular/common/http';
 import { tap } from 'rxjs/operators';
 import { ModalService } from '../../../services/modal.service';
 import { Cliente } from '../../../data/cliente-data';
+import { AuthService } from '../../../services/auth.service';
 
 
 @Component({
@@ -20,6 +21,7 @@ export class DetalleComponent implements OnInit {
   progreso = 0;
   
   constructor( private clientService: ClientService,
+               public authService: AuthService,
                public modalService: ModalService) { }
 
   ngOnInit() {}

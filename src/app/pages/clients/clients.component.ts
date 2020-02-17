@@ -9,6 +9,7 @@ import { ActivatedRoute } from '@angular/router';
 import { formatDate } from '@angular/common';
 import { ModalService } from '../../services/modal.service';
 import { Cliente } from '../../data/cliente-data';
+import { AuthService } from '../../services/auth.service';
 
 
 
@@ -23,6 +24,7 @@ export class ClientsComponent implements OnInit {
 
   constructor(private clientService : ClientService,
               private modalService: ModalService,
+              public authService: AuthService,
               private activatedRoute: ActivatedRoute) { }
 
   ngOnInit() {   
