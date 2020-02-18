@@ -56,6 +56,7 @@ export class ClientsFormComponent implements OnInit {
 
   update(): void {
     console.log(this.cliente);
+    this.cliente.facturas = null;
     this.clienteService.saveClient(this.cliente)
       .subscribe(
         (json:any) => {

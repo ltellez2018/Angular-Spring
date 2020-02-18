@@ -7,6 +7,8 @@ import { tap } from 'rxjs/operators';
 import { ModalService } from '../../../services/modal.service';
 import { Cliente } from '../../../data/cliente-data';
 import { AuthService } from '../../../services/auth.service';
+import { FacturaService } from '../../../services/factura.service';
+import { Factura } from 'src/app/data/factura-data';
 
 
 @Component({
@@ -22,7 +24,8 @@ export class DetalleComponent implements OnInit {
   
   constructor( private clientService: ClientService,
                public authService: AuthService,
-               public modalService: ModalService) { }
+               public modalService: ModalService,
+               private facturasService: FacturaService) { }
 
   ngOnInit() {}
 
@@ -73,4 +76,28 @@ export class DetalleComponent implements OnInit {
     this.progreso = 0;
   }
 
+
+  delete(factura: Factura){
+    Swal.fire({
+      title: 'Esta seguro de eliminar la Factura?',
+      text: `Cliente: ${factura.descripcion}`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Si, eliminar!',
+      cancelButtonText: 'No, por el momento'
+    }).then((result) => {
+      if (result.value) {
+        this.facturasService.delete(factura.id).subscribe(()=> {
+                      this.cliente.facturas = this.cliente.facturas .filter(fac => fac.id !== factura.id)
+        });  
+        Swal.fire(
+          'Eliminada!',
+          `Factura: ${factura.descripcion}`,
+          'success'
+        )
+      }
+    })  
+  }
 }

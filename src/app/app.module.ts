@@ -20,7 +20,13 @@ import { DetalleComponent } from './pages/clients/detalle/detalle.component';
 import { LoginComponent } from './pages/usuarios/login.component';
 import { TokenInterceptor } from './interceptors/token.interceptor';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
+import { DetalleFacturaComponent } from './pages/facturas/detalle-factura.component';
+import { FacturasComponent } from './pages/facturas/facturas.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
+import {MatAutocompleteModule} from '@angular/material/autocomplete'
+import {MatInputModule} from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 @NgModule({
   declarations: [
@@ -32,14 +38,20 @@ import { AuthInterceptor } from './interceptors/auth.interceptor';
     ClientsFormComponent,
     PaginatorComponent,
     DetalleComponent,
-    LoginComponent
+    LoginComponent,
+    DetalleFacturaComponent,
+    FacturasComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
     FormsModule,
-    ReactiveFormsModule 
+    ReactiveFormsModule,
+    BrowserAnimationsModule,
+    MatAutocompleteModule ,
+    MatInputModule,
+    MatFormFieldModule 
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },

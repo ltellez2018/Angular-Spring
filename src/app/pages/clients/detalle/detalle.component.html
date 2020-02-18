@@ -10,6 +10,7 @@
         </div>
         <div class="modal-body">
           <div class="container">
+            <!--CLiENTE-->
             <div class="row">
               <div class="col-sm">
 
@@ -40,9 +41,43 @@
               </div>
               <div class="col-sm">
                 <img class="img-thumbnail rounded"  *ngIf="cliente?.foto"  src="http://localhost:8080/api/uploads/img/{{cliente?.foto}}" alt="Foto de Perfil">              
-              </div>
-            
-          </div>
+              </div>         
+            </div>
+             <!--FATCURA-->
+             <div class="row" *ngIf="authService.hasRole('ROLE_ADMIN')" >
+              <td><a [routerLink]="['/facturas/form',cliente.id]" class="badge badge-success"  style="cursor: pointer;">Crear factura</a></td>
+             </div>
+             <div class="row">
+               <div *ngIf="cliente.facturas.length == 0" class="alert alert-info my-4">
+                 No hay facturas asignadas para el cliente {{cliente.nombre}}  {{cliente.apellido}}
+               </div>
+               <table *ngIf="cliente.facturas.length > 0" class="table bordered table-striped my-4">
+                 <thead>
+                    <th>Folio</th>
+                    <th>Descripcion</th>
+                    <th>Fecha</th>
+                    <th>Total</th>
+                    <th>Detalle</th>
+                    <th *ngIf="authService.hasRole('ROLE_ADMIN')" > Eliminar</th>
+                 </thead>
+                 <tbody>
+                   <tr *ngFor="let factura of cliente.facturas">
+                    <td>{{factura.id}}</td>
+                    <td>{{factura.descripcion}}</td>
+                    <td>{{factura.createAt}}</td>
+                    <td>{{factura.total}}</td>
+                    <td>
+                      <a [routerLink]="['/facturas',factura.id]" class="badge badge-primary"  style="cursor: pointer;">Detalle</a>
+                    </td>
+                    <td *ngIf="authService.hasRole('ROLE_ADMIN')" > 
+                      <a (click)="delete(factura)" class="badge badge-danger text-white"  style="cursor: pointer;">Eliminar</a>
+                    </td>
+                  </tr>
+
+                 </tbody>
+
+               </table>
+            </div>
       </div>
         </div>
         <div class="modal-footer">

@@ -26,13 +26,14 @@
             <th scope="col">Apellido</th>
             <th scope="col">Email</th>
             <th scope="col">Creado</th>
+            <th *ngIf="authService.hasRole('ROLE_ADMIN')" scope="col">Crear factura</th>
             <th *ngIf="authService.hasRole('ROLE_ADMIN')" scope="col">Editar</th>
             <th *ngIf="authService.hasRole('ROLE_ADMIN')" scope="col">Eliminar</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let client of clientes">
-            <td *ngIf="authService.hasRole('ROLE_USER')">
+            <td *ngIf="authService.hasRole('ROLE_USER')"> 
               <img  (click)="abrirModal(client)" style="width: 64px; cursor: pointer;" class="img-thumbnail rounded"  *ngIf="client.foto"  src="http://localhost:8080/api/uploads/img/{{client.foto}}" alt="Foto de Perfil">              
               <img  (click)="abrirModal(client)" style="width: 64px; cursor: pointer;" class="img-thumbnail rounded"  *ngIf="!client.foto"  src="http://localhost:8080/images/not-user.png" alt="Sin Foto">              
             </td>  
@@ -40,6 +41,7 @@
             <td>{{client.apellido}}</td>
             <td>{{client.email}}</td>
             <td>{{client.createAt}}</td>
+            <td><a *ngIf="authService.hasRole('ROLE_ADMIN')" [routerLink]="['/facturas/form',client.id]" class="badge badge-success"  style="cursor: pointer;">Crear factura</a></td>
             <td><a *ngIf="authService.hasRole('ROLE_ADMIN')" [routerLink]="['/cliente/form',client.id]" class="badge badge-primary"  style="cursor: pointer;">Editar</a></td>
             <td><a *ngIf="authService.hasRole('ROLE_ADMIN')" (click)="deleteCliente(client)" class="badge badge-danger text-white" style="cursor: pointer;">Eliminar</a></td>
           </tr>
